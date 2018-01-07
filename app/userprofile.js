@@ -39,11 +39,14 @@ module.exports = function()
         },
 
         saveWallets: function(req, res, done) {
+            if (!req.isAuthenticated()) {
+                return done(null, false);
+            }
             User.findOne({ 'local.email' :  req.user.local.email }, function(err, user) {
                 var currentWallets = [];
                 // if there are any errors, return the error
                 if (err) {
-                    log('warn', logSystem, 'Failed to find user %s: %s', [req.user.local.email, err.toString()]);
+                    log('error', logSystem, 'Failed to find user %s: %s', [req.user.local.email, err.toString()]);
                     return done(err);
                 }
 
@@ -118,6 +121,54 @@ module.exports = function()
                     return done(err);
                 });
             });            
+        },
+
+        saveNfSettings: function(req, res, done) {
+            if (!req.isAuthenticated()) {
+                return done(null, false);
+            }
+
+            var result = {}, 
+                userKey = config.coin + ':auth:users:' + req.user.id + ':hashNf',
+                redisCommands = [
+                    ['hset', userKey, 'loEnabled', req.body.hashNf.loEnabled == "true"],
+                    ['hset', userKey, 'hiEnabled', req.body.hashNf.hiEnabled == "true"],
+                    ['hset', userKey, 'loRate', req.body.hashNf.loRate],
+                    ['hset', userKey, 'hiRate', req.body.hashNf.hiRate]
+                ];
+                               
+            redisClient.multi(redisCommands).exec(function(error, results) {
+                if(error) {
+                    log('error', logSystem, 'Failed ot save user notification settings: %s', [error.toString()]);
+                    return done(error);
+                }
+                res.send("Ok");
+            });
+        },
+
+        getUserSettings: function(req, user, success, error) {
+            var result = {}, 
+                userKey = config.coin + ':auth:users:' + user.id,
+                redisCommands = [
+                    ['hset', userKey, 'email', user.local.email],
+                    ['hgetall', userKey + ':hashNf']
+                ];
+
+            redisClient.multi(redisCommands).exec(function(err, results) {
+                if(err) {
+                    log('error', logSystem, 'Failed to access user details: %s', [error.toString()]);
+                    return error(err);
+                }
+
+                user.hashNf = results[1] || {
+                    loEnabled: true,
+                    hiEnabled: false,
+                    loRate: 3000,
+                    hiRate: 4000
+                };
+
+                return success(user);
+            });
         }
     };
 

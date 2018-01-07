@@ -2,7 +2,7 @@ module.exports = function(app, passport) {
 
     var recaptcha = require("./recaptcha");
     var User = require('../app/models/user');
-    var userProfile = require('./userprofile');
+    var userProfile = require('./userprofile')();
     var wallets = require('./wallets')();
 
 // normal routes ===============================================================
@@ -16,10 +16,14 @@ module.exports = function(app, passport) {
     app.get('/profile', isLoggedIn, function(req, res, done) {
         wallets.getUserWallets(req.user.id, function(results)
         {
-            res.render('profile.ejs', {
-                user : req.user,
-                message : req.flash('profileMessage').toString(),
-                wallets : results
+            userProfile.getUserSettings(req, req.user, function(user) {
+                res.render('profile.ejs', {
+                    user : user,
+                    message : req.flash('profileMessage').toString(),
+                    wallets : results
+                });    
+            }, function(error) {
+                done(err);    
             });
         }, function(err) {
             done(err);
@@ -80,9 +84,11 @@ module.exports = function(app, passport) {
         }));
 
         // change password
-        app.post('/changepass', userProfile().changePassword);
+        app.post('/changepass', userProfile.changePassword);
 
-        app.post('/savewallets', userProfile().saveWallets);
+        app.post('/savewallets', userProfile.saveWallets);
+
+        app.post('/saveNfSettings', userProfile.saveNfSettings);
 
     // facebook -------------------------------
 

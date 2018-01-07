@@ -74,6 +74,14 @@
 
 </style>
 
+<div class="row" id="registerWarning" style="display:none;">
+	<div style="margin-top:5px;margin-right:5px;" class="float-right"><a href="#" class="btn btn-xs btn-info" onclick="$('#registerWarning').hide(); createCookie('registerWarning', true, 365);">
+		<i class="fa fa-times" title="Hide registration prompt"></i></a></div>
+	<div class="alert alert-info clearfix">
+		<strong>Please <a href="#login">register</a> before mining.</strong>  This pool requires user registration. Miner connections with unregistered wallet address will be declined.
+	</div>
+</div>
+
 <div class="row">
 	<div class="col-md-4 col-sm-6 stats">
 		<h3>This Pool</h3>
@@ -480,4 +488,12 @@
 		warn.show();
 	}
 
+	if(!isAuthenticated) {
+		var reg = $('#registerWarning');
+		if (readCookie('registerWarning')) {
+			reg.hide();
+		} else {
+			reg.show();
+		}
+	}
 </script>

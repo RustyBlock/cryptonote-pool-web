@@ -10,24 +10,51 @@
     <div class="row"> <!-- User settings -->
         <div class="col-sm-12">
             <div class="well">
-                <h3>MANDATORY! Wallet addresses of your miner(s)</h3>
-                <span>One address per line</span>
+                <h4>Enter wallet address(es) of your miner(s)</h4>
+                <span>One address per line. <strong>Warning!</strong> Pool will not be able to accept miner connections if this field is empty or incorrect.</span>
                 <div>
-                    <textarea id="wallets" style="width:100%" rows="4"><%= wallets.join('\n') %></textarea>
+                    <textarea id="wallets" style="width:100%" rows="3"><%= wallets.join('\n') %></textarea>
                 </div>
                 <button id="saveWallets" class="btn btn-default">&nbsp;Save&nbsp;</button>&nbsp;&nbsp;
                 <span style="color:#FF0004;" id="saveWalletsMessage"></span>
             </div>
         </div>
     </div>
+    <div class="row"> <!-- Notification settings -->
+        <div class="col-sm-12">
+            <div class="well">
+                <h4>Email notifications</h4>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p>Send email if hashrate is<label for="chkNfLow">&nbsp;too low</label>&nbsp;<input type="checkbox" id="chkNfLow" <%= (user.hashNf.loEnabled ==='true' ? 'checked="checked"' : '') %>/>&nbsp;and/or&nbsp;<label for="chkNfHigh">too high</label>
+                            <input type="checkbox" id="chkNfHigh" <%= (user.hashNf.hiEnabled === 'true' ? 'checked="checked"' : '') %>/></p>
+                        <p>Optimal hashrate from &nbsp;<input type="text" name="minRate" id="minRate" style="width:100px;" value="<%= user.hashNf.loRate %>"/>&nbsp;to&nbsp;
+                            <input type="text" name="maxRate" id="maxRate" style="width:100px;" value="<%= user.hashNf.hiRate %>"/>&nbsp;<strong>H/s</strong></p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p>Also notify me if:
+                            <ul>
+                                <li><input type="checkbox" id="chkNfBlock" disabled="disabled" title="coming soon..."/>&nbsp;<label for="chkNfBlock">we found a block</label></li>
+                                <li><input type="checkbox" id="chkNfPayment" disabled="disabled" title="coming soon..."/>&nbsp;<label for="chkNfPayment">payment is made</label></li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="col-sm-12">
+                        <button id="saveNf" class="btn btn-default">&nbsp;Save&nbsp;</button>&nbsp;&nbsp;
+                        <span style="color:#FF0004;" id="saveNfMessage"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
     <div class="row">
 
         <!-- LOCAL INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h3><span class="fa fa-user"></span> Email &amp; password <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
+                <h4><span class="fa fa-user"></span> Email &amp; password <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
                     <a href="#" class="btn btn-default" id="changePass" onclick="$('#changePassForm').show(); $('#changePass').hide(); mess.hide(); return false;">Change password</a>
-                </h3>
+                </h4>
 
                 <% if (user.local.email) { %>
                     <p>
@@ -160,11 +187,19 @@ $("#wallets").keyup(function(){
     $("#saveWalletsMessage").text("");
 });
 
+$("#chkNfLow, #chkNfHigh, #minRate, #maxRate").keyup(function(){
+    $("#saveNfMessage").text("");
+});
+$("#chkNfLow, #chkNfHigh").click(function(){
+    $("#saveNfMessage").text("");
+});
+
 $("#saveWallets").click(function(){
     var wallets = $("#wallets").val().trim(),
         mess = $("#saveWalletsMessage");
 
     if(wallets == "") {
+        mess.css("color","#FF0004");
         mess.text("List of wallets cannot be empty");
         return false;
     }
@@ -174,5 +209,35 @@ $("#saveWallets").click(function(){
     }).done(function() { mess.css("color","#00A41E"); mess.text("Saved successfully!"); })
     .fail(function() { mess.css("color","#FF0004"); mess.text("Failed to save wallet address(es)"); } );
 });
+
+$("#saveNf").click(function(){
+    var minRate = $("#minRate").val().trim(),
+        maxRate = $("#maxRate").val().trim(),
+        chkNfLow = $("#chkNfLow").is(":checked"),
+        chkNfHigh = $("#chkNfHigh").is(":checked"),
+        mess = $("#saveNfMessage");
+
+    if(chkNfLow && (minRate === "" || isNaN(minRate))) {
+        mess.css("color","#FF0004");
+        mess.text("\"hashrate from\" must be a numer");
+        return false;
+    }
+    if(chkNfHigh && (maxRate === "" || isNaN(maxRate))) {
+        mess.css("color","#FF0004");
+        mess.text("\"hashrate to\" must be a numer");
+        return false;
+    }
+
+    $.post("/saveNfSettings", { 
+        "hashNf": {
+            loEnabled: chkNfLow,
+            hiEnabled: chkNfHigh,
+            loRate: isNaN(minRate) ? '' : minRate,
+            hiRate: isNaN(maxRate) ? '' : maxRate
+        }
+    }).done(function() { mess.css("color","#00A41E"); mess.text("Saved successfully!"); })
+    .fail(function() { mess.css("color","#FF0004"); mess.text("Failed to save user settings"); } );
+});
+
 
 </script>
