@@ -465,6 +465,7 @@
 		urlParams = parse_query_string(qs);
 
 	var address = urlParams['miner'] || docCookies.getItem('mining_address');
+	address = address.replace('#', '');
 
 	if (address){
 		$('#yourStatsInput').val(address);
