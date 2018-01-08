@@ -375,7 +375,7 @@
 			$('#yourStatsInput').focus();
 			return;
 		}		
-		window.location.href = window.location.href.split('?')[0] + '?miner=' + address;
+		window.location.href = window.location.href.split('?')[0].replace('#', '') + '?miner=' + address;
 	});
 
 	function applyMinerAddress() {
