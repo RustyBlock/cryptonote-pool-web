@@ -370,7 +370,15 @@
 	var addressTimeout;
 
 	$('#lookUp').click(function(){
+		var address = $('#yourStatsInput').val().trim();
+		if (!address){
+			$('#yourStatsInput').focus();
+			return;
+		}		
+		window.location.href = window.location.href.split('?')[0] + '?miner=' + address;
+	});
 
+	function applyMinerAddress() {
 		var address = $('#yourStatsInput').val().trim();
 		if (!address){
 			$('#yourStatsInput').focus();
@@ -450,13 +458,17 @@
 			});
 		}
 		fetchAddressStats(false);
-	});
+	};
 
-	var address = docCookies.getItem('mining_address');
+	var qsChunks = window.location.href.split('?'),
+		qs = qsChunks.length > 1 ? qs = qsChunks[1] : '',
+		urlParams = parse_query_string(qs);
+
+	var address = urlParams['miner'] || docCookies.getItem('mining_address');
 
 	if (address){
 		$('#yourStatsInput').val(address);
-		$('#lookUp').click();
+		applyMinerAddress();
 	}
 
 	$('#yourStatsInput').keyup(function(e){
