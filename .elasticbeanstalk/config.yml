@@ -1,24 +1,20 @@
 branch-defaults:
   master:
-    environment: node-express-env
+    environment: sumoWeb-env
 environment-defaults:
-  Default-Environment:
-    branch: null
-    repository: null
-  node-express-env:
+  sumoWeb-env:
     branch: null
     repository: null
 global:
-  application_name: My First Elastic Beanstalk Application
-  branch: null
+  application_name: Sumo Web
   default_ec2_keyname: RustyLocak-pools
-  default_platform: node.js
+  default_platform: arn:aws:elasticbeanstalk:eu-central-1::platform/Node.js running
+    on 64bit Amazon Linux/4.4.2
   default_region: eu-central-1
   include_git_submodules: true
   instance_profile: null
   platform_name: null
   platform_version: null
   profile: eb-cli
-  repository: null
   sc: git
   workspace_type: Application
