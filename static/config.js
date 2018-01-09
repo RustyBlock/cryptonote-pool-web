@@ -1,7 +1,7 @@
 var api = "http://sumo.rustylock.club:7117";
 
-var coinUnits = 100;
-var coinDecimalPlaces = 2;
+var coinUnits = 1000000000;
+var coinDecimalPlaces = 6;
 
 var poolHost = "sumo.rustylock.club";
 
