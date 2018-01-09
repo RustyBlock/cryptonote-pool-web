@@ -1,6 +1,6 @@
 {
-    "coin": "electroneum",
-    "symbol": "ETN",
+    "coin": "sumokoin",
+    "symbol": "SUMO",
     "logging": {
         "files": {
             "level": "info",
