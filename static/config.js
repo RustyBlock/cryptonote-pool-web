@@ -11,6 +11,6 @@ var email = "admin@rustylock.club";
 
 var easyminerDownload = "https://github.com/zone117x/cryptonote-easy-miner/releases/";
 
-var blockchainExplorer = "hhttps://explorer.sumokoin.com/block/";
+var blockchainExplorer = "https://explorer.sumokoin.com/block/";
 
 var transactionExplorer = "https://explorer.sumokoin.com/tx/";
