@@ -1,4 +1,4 @@
-var api = "http://sumo.rustylock.club:8117";
+var api = "http://sumo.rustylock.club:7117";
 
 var coinUnits = 100;
 var coinDecimalPlaces = 2;
