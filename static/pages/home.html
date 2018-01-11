@@ -256,8 +256,8 @@
 			if (lastStats.pool.lastBlockFound){
 				var d = new Date(parseInt(lastStats.pool.lastBlockFound)).toISOString(),
 					progress = lastStats.pool.roundHashes > lastStats.network.difficulty ?
-					lastStats.network.difficulty / lastStats.pool.roundHashes : lastStats.pool.roundHashes / lastStats.network.difficulty;
-				//$('#poolLastBlockFound').timeago('update', d);
+					(lastStats.pool.roundHashes / lastStats.network.difficulty - 1) : lastStats.pool.roundHashes / lastStats.network.difficulty;
+				//$('#poolLastBlockFound').timeago('update', d);eb deplo	
 				$('#poolLastBlockFound').text((lastStats.pool.roundHashes < lastStats.network.difficulty ? '' : '- ') + Math.floor(progress * 100) + "%");
 				$('#poolLastBlockFound').parent().attr("title", d);
 			}
