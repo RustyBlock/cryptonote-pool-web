@@ -258,7 +258,7 @@
 					progress = lastStats.pool.roundHashes > lastStats.network.difficulty ?
 					lastStats.network.difficulty / lastStats.pool.roundHashes : lastStats.pool.roundHashes / lastStats.network.difficulty;
 				//$('#poolLastBlockFound').timeago('update', d);
-				$('#poolLastBlockFound').text((lastStats.pool.roundHashes < lastStats.network.difficulty ? '- ' : '') + Math.floor(progress * 100) + "%");
+				$('#poolLastBlockFound').text((lastStats.pool.roundHashes < lastStats.network.difficulty ? '' : '- ') + Math.floor(progress * 100) + "%");
 				$('#poolLastBlockFound').parent().attr("title", d);
 			}
 			else {
