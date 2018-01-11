@@ -78,7 +78,8 @@
 	<div style="margin-top:5px;margin-right:5px;" class="float-right"><a href="#" class="btn btn-xs btn-info" onclick="$('#registerWarning').hide(); createCookie('registerWarning', true, 365);">
 		<i class="fa fa-times" title="Hide registration prompt"></i></a></div>
 	<div class="alert alert-info clearfix">
-		<strong>Please <a href="#login">register</a> before mining.</strong>  This pool requires user registration. Miner connections with unregistered wallet address will be declined.
+		<p><strong>Please <a href="#login">register</a> before mining.</strong>  This pool requires user registration. Miner connections with unregistered wallet address will be declined.</p>
+		<p><a href="https://goo.gl/oEM1sM" target="_blank"><b>Join our community on &nbsp;<img src="images/slack-logo.png"/></b></a> &nbsp;to get support and discuss your suggestions.</p>
 	</div>
 </div>
 
@@ -86,7 +87,7 @@
 	<div class="col-md-4 col-sm-6 stats">
 		<h3>This Pool</h3>
 		<div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
-		<div><i class="fa fa-clock-o"></i> Block Found: <span id="poolLastBlockFound"></span><span id="poolLastBlockFoundTs" style="font-size:x-small"></span></div>
+		<div><i class="fa fa-clock-o"></i> Round Progress: <span id="poolLastBlockFound"></span></div>
 		<div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
 		<div><i class="fa fa-random"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
 		<div><i class="fa fa-money"></i> Total Pool Fee: <span id="poolFee"></span></div>
@@ -96,7 +97,7 @@
 	<div class="col-md-4 col-sm-6 stats">
 		<h3>Electroneum Pool Network</h3>
 		<div><i class="fa fa-tachometer"></i> Hash Rate: <span id="networkHashrate"></span></div>
-		<div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span><span id="networkLastBlockFoundTs" style="font-size:x-small"></span></div>
+		<div><i class="fa fa-clock-o"></i> Block Found: <span id="networkLastBlockFound"></span></div>
 		<div><i class="fa fa-unlock-alt"></i> Difficulty: <span id="networkDifficulty"></span></div>
 		<div><i class="fa fa-bars"></i> Blockchain Height: <span id="blockchainHeight"></span></div>
 		<div><i class="fa fa-money"></i> Last Reward: <span id="networkLastReward"></span></div>
@@ -253,8 +254,11 @@
 			updateText('poolHashrate', getReadableHashRateString(lastStats.pool.hashrate) + '/sec');
 
 			if (lastStats.pool.lastBlockFound){
-				var d = new Date(parseInt(lastStats.pool.lastBlockFound)).toISOString();
-				$('#poolLastBlockFound').timeago('update', d);
+				var d = new Date(parseInt(lastStats.pool.lastBlockFound)).toISOString(),
+					progress = lastStats.pool.roundHashes > lastStats.network.difficulty ?
+					lastStats.network.difficulty / lastStats.pool.roundHashes : lastStats.pool.roundHashes / lastStats.network.difficulty;
+				//$('#poolLastBlockFound').timeago('update', d);
+				$('#poolLastBlockFound').text((lastStats.pool.roundHashes < lastStats.network.difficulty ? '- ' : '') + Math.floor(progress * 100) + "%");
 				$('#poolLastBlockFound').parent().attr("title", d);
 			}
 			else {
