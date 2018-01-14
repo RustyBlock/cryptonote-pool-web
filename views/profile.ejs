@@ -196,7 +196,8 @@ $("#chkNfLow, #chkNfHigh").click(function(){
 
 $("#saveWallets").click(function(){
     var wallets = $("#wallets").val().trim(),
-        mess = $("#saveWalletsMessage");
+        mess = $("#saveWalletsMessage"),
+        addresses = wallets.split("\n"), addressValid = true;
 
     if(wallets == "") {
         mess.css("color","#FF0004");
@@ -204,8 +205,48 @@ $("#saveWallets").click(function(){
         return false;
     }
 
+    for(var i=0;i<addresses.length;i++)
+    {
+        var addr = addresses[i] = addresses[i].replace(/\s/g, ""),
+            lengthWarning = "Electroneum wallet address should be 98 characters long";
+
+        if(addr.indexOf("etn") !== 0) {
+            mess.html("line " + (i + 1) + ": Electroneum wallet address should start from <b>etn</b>, e.g. \"<u>etn</u>Nn3iz...\"");
+            addressValid = false;
+            break;
+        }
+
+        if(addr.length > 98) {
+            mess.html("line " + (i + 1) + ": " + lengthWarning);
+            addressValid = false;
+            break;
+        }
+
+        if(addr.length === 33 && (i + 2) < addresses.length) { // might be silly copy paste from PDF that makes 3 lines
+            var addr1 = addresses[i+1].replace(/\s/g, ""),
+                addr2 = addresses[i+2].replace(/\s/g, "");
+            if(addr1.length === 33 && addr2.length === 32) { // definitely copy from PDF
+                addresses[i] = addr + addr1 + addr2;
+                addresses.splice(i+1, 2);
+                i = i+2;
+                continue;
+            }
+        } else if(addr.length < 98) {
+            mess.html("line " + (i + 1) + ": " + lengthWarning);
+            addressValid = false;
+            break;
+        }
+    };
+
+    if(!addressValid) {
+            mess.css("color","#FF0004");
+            return false;
+    } else {
+        $("#wallets").val(addresses.join("\n"));
+    }
+
     $.post("/savewallets", { 
-        "wallets": wallets.split("\n")
+        "wallets": addresses
     }).done(function() { mess.css("color","#00A41E"); mess.text("Saved successfully!"); })
     .fail(function() { mess.css("color","#FF0004"); mess.text("Failed to save wallet address(es)"); } );
 });

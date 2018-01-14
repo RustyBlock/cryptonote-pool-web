@@ -54,3 +54,31 @@ function parse_query_string(query) {
     }
     return query_string;
   }
+
+  function formatLuck(difficulty, shares){
+    //Only an approximation to reverse the calculations done in pool.js, because the shares with their respective times are not recorded in redis
+    //Approximation assumes equal pool hashrate for the whole round
+    //Could potentially be replaced by storing the sum of all job.difficulty in the redis db. 
+    if (lastStats.config.slushMiningEnabled) {                                      //Uses integral calculus to calculate the average of a dynamic function
+        var accurateShares = 1/lastStats.config.blockTime * (                       //1/blockTime to get the average
+            shares * lastStats.config.weight * (                                    //Basically calculates the 'area below the graph' between 0 and blockTime
+                1 - Math.pow(
+                        Math.E, 
+                        ((- lastStats.config.blockTime) / lastStats.config.weight)  //blockTime is equal to the highest possible result of (dateNowSeconds - scoreTime)
+                    )
+            )
+        );
+    }
+    else {
+        var accurateShares = shares;
+    }
+
+    if (difficulty > accurateShares){
+        var percent = 100 - Math.round(accurateShares / difficulty * 100);
+        return '<span class="luckGood">' + percent + '%</span>';
+    }
+    else{
+        var percent = (100 - Math.round(difficulty / accurateShares * 100)) * -1;
+        return '<span class="luckBad">' + percent + '%</span>';
+    }
+}

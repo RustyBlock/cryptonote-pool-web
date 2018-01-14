@@ -87,9 +87,9 @@
 	<div class="col-md-4 col-sm-6 stats">
 		<h3>This Pool</h3>
 		<div><i class="fa fa-tachometer"></i> Hash Rate: <span id="poolHashrate"></span></div>
-		<div><i class="fa fa-clock-o"></i> Round Progress: <span id="poolLastBlockFound"></span></div>
+		<div><i class="fa fa-clock-o"></i> Last Block Found: <span id="poolLastBlockFound"></span></div>
 		<div><i class="fa fa-users"></i> Connected Miners: <span id="poolMiners"></span></div>
-		<div><i class="fa fa-random"></i> Round Hashes: <span id="poolRoundHashes"></span></div>
+		<div><i class="fa fa-random"></i> Round Hashes: <span id="poolRoundHashes"></span>&nbsp;</div>
 		<div><i class="fa fa-money"></i> Total Pool Fee: <span id="poolFee"></span></div>
 		<div><i class="fa fa-history"></i> Block Found Every: <span id="blockSolvedTime"></span> (est.)</div>
 	</div>
@@ -254,11 +254,8 @@
 			updateText('poolHashrate', getReadableHashRateString(lastStats.pool.hashrate) + '/sec');
 
 			if (lastStats.pool.lastBlockFound){
-				var d = new Date(parseInt(lastStats.pool.lastBlockFound)).toISOString(),
-					progress = lastStats.pool.roundHashes > lastStats.network.difficulty ?
-					(lastStats.pool.roundHashes / lastStats.network.difficulty - 1) : lastStats.pool.roundHashes / lastStats.network.difficulty;
-				//$('#poolLastBlockFound').timeago('update', d);eb deplo	
-				$('#poolLastBlockFound').text((lastStats.pool.roundHashes < lastStats.network.difficulty ? '' : '- ') + Math.floor(progress * 100) + "%");
+				var d = new Date(parseInt(lastStats.pool.lastBlockFound)).toISOString();
+				$('#poolLastBlockFound').timeago('update', d);
 				$('#poolLastBlockFound').parent().attr("title", d);
 			}
 			else {
@@ -267,8 +264,8 @@
 			}
 
 			updateText('poolMiners', lastStats.pool.miners.toString());
-			updateText('poolRoundHashes', lastStats.pool.roundHashes.toString());			
-
+			updateText('poolRoundHashes', lastStats.pool.roundHashes.toString());	
+			$('#poolRoundHashes').append("&nbsp;(luck: " + formatLuck(lastStats.network.difficulty, lastStats.pool.roundHashes) + ")");
 
 			var totalFee = lastStats.config.fee;
 			/*
