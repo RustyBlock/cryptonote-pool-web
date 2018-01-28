@@ -208,6 +208,7 @@ $("#saveWallets").click(function(){
     for(var i=0;i<addresses.length;i++)
     {
         var addr = addresses[i] = addresses[i].replace(/\s/g, ""),
+            addrWithPaymentId = addr.split('-'),
             lengthWarning = "Electroneum wallet address should be 98 characters long";
 
         if(addr.indexOf("etn") !== 0) {
@@ -216,8 +217,8 @@ $("#saveWallets").click(function(){
             break;
         }
 
-        if(addr.length > 98) {
-            mess.html("line " + (i + 1) + ": " + lengthWarning);
+        if(addr.indexOf(".") !== -1) {
+            mess.html("line " + (i + 1) + ": Dot should not be included in wallet address registration.</br>Please use dash (-) symbol to specify Payment ID after ETN wallet address.");
             addressValid = false;
             break;
         }
@@ -231,8 +232,20 @@ $("#saveWallets").click(function(){
                 i = i+2;
                 continue;
             }
-        } else if(addr.length < 98) {
+        } else if(addrWithPaymentId[0].length < 98) {
             mess.html("line " + (i + 1) + ": " + lengthWarning);
+            addressValid = false;
+            break;
+        }
+        
+        if(addrWithPaymentId[0].length > 98) {
+            mess.html("line " + (i + 1) + ": " + lengthWarning);
+            addressValid = false;
+            break;
+        }
+        
+        if(addrWithPaymentId.length > 1 && addrWithPaymentId[1].length !== 64) {
+            mess.html("line " + (i + 1) + ": Payment ID should be 64 charatcers long, including numbers and letters from A to F");
             addressValid = false;
             break;
         }

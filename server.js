@@ -51,6 +51,9 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // custom static content integration
 app.use("/pages", express.static('static/pages'))
+app.get("/pages/undefined", function(request, response, next) {
+    response.redirect("/login");
+  });
 app.use("/", express.static('static'))
 
 // routes ======================================================================
