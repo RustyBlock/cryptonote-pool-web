@@ -74,7 +74,7 @@
 
 </style>
 
-<div class="row" id="registerWarning" style="display:none;">
+<div class="row" id="registerWarning">
 	<div style="margin-top:5px;margin-right:5px;" class="float-right"><a href="#" class="btn btn-xs btn-info" onclick="$('#registerWarning').hide(); createCookie('registerWarning', true, 365);">
 		<i class="fa fa-times" title="Hide registration prompt"></i></a></div>
 	<div class="alert alert-info clearfix">
@@ -149,17 +149,16 @@
 	</div>
 </div>
 
-<div id="walletWarning" style="display:none;">
+<div id="paymentIdNote">
 <hr>
-
 <div class="row">
-	<div style="margin-top:24px;" class="float-right"><a href="#" class="btn btn-xs btn-info" onclick="$('#walletWarning').hide(); createCookie('walletWarning', true, 365);">
+	<div style="margin-top:24px;" class="float-right"><a href="#" class="btn btn-xs btn-info" onclick="$('#paymentIdNote').hide(); createCookie('paymentIdNote', true, 365);">
 		<i class="fa fa-times" title="Hide wallet information"></i></a></div>
 	<div class="float-left"><h3 class="mb-20">Electroneum wallets for mining</h3></div>
 	<div class="alert alert-success clearfix">
-		<strong>We support direct mining to Cryptopia accounts!</strong>  This pool supports wallet addresses with Payment ID. Use dash symbol (-) to separate your ETN wallet address and Payment ID.
-		<br/>For example etnjzKFU6ogESSKRZZbdq...BWYqtchtq9tBap8Qr4M<b style="color:chocolate;">-a6e59f7bb27d9ba...8b6df</b>.<br/>  
-		<br/>If you'd like to mine to your own ETN wallet instead, we recommend the following options:
+		<strong>We support direct mining to <a href="https://www.cryptopia.co.nz/Exchange" target="_blank">Cryptopia accounts</a>!</strong> Use dash symbol (-) to separate your ETN wallet address and Payment ID.
+		For example <span style="font-family:Courier New, Courier, monospace">etnjzKFU6ogESSKRZZbdq...BWYqtchtq9tBap8Qr4M<b style="color:chocolate;">-a6e59f7bb27d9ba...8b6df</b></span>.
+		<br/>We recommend mobile or paper wallet if you'd like to mine to your own ETN address:
 	</div>
 	<div class="col-md-6 col-sm-6">
 		<strong class="float-left">Official Electroneum mobile wallet</strong><br/>
@@ -499,19 +498,18 @@
 		});
 	});
 
-	var warn = $('#walletWarning');
-	if (readCookie('walletWarning')) {
+	var warn = $('#paymentIdNote');
+	if (readCookie('paymentIdNote')) {
 		warn.hide();
 	} else {
 		warn.show();
 	}
 
-	if(!isAuthenticated) {
-		var reg = $('#registerWarning');
-		if (readCookie('registerWarning')) {
-			reg.hide();
-		} else {
-			reg.show();
-		}
+	var reg = $('#registerWarning');
+	if (readCookie('registerWarning') || isAuthenticated) {
+		reg.hide();
+	} else {
+		reg.show();
 	}
+
 </script>

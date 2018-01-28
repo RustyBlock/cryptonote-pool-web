@@ -50,6 +50,11 @@
 <h3>Mining Pool Connection Details</h3>
 <div class="stats">
 	<div><i class="fa fa-cloud"></i> Mining Pool Address: <span id="miningPoolHost"></span></div>
+	<div class="alert alert-info"><p style="margin:5px 10px 5px 10px"><b>Payment ID</b> can be specified after ETN address using - as a separator. This allows mining directly to exchange wallets, e.g. <a href="https://www.cryptopia.co.nz/Exchange" target="_blank">Cryptopia</a><br/>
+	For example: <span style="font-family: Courier New, Courier, monospace">etnjzKFU6ogESSKRZZbdqraPdcKVxEC17Cm1Xvbyy76PARQMmgrgceH4krAH6xmjKwJ3HtSAKuyFm1BBWYqtchtq9tBap8Qr4M<b style="background:burlywood">-</b>a6e59f7bb27d9baac314fcf3de92514bedce7564206e0741dac4dd652248b6df</span></p></div>
+	<div class="alert alert-info"><p style="margin:5px 10px 5px 10px"><b>Fixed difficulty</b> can be specified after ETN address using . as a separator. This helps to satisfy cloud mining requirements, e.g. <a href="https://www.nicehash.com/marketplace/cryptonight" target="_blank">Nicehash</a><br/>
+	For example: <span style="font-family: Courier New, Courier, monospace">etnjzKFU6ogESSKRZZbdqraPdcKVxEC17Cm1Xvbyy76PARQMmgrgceH4krAH6xmjKwJ3HtSAKuyFm1BBWYqtchtq9tBap8Qr4M<b style="background:burlywood">.</b>100000</span><br/>
+	or:<br/><span style="font-family: Courier New, Courier, monospace">etnjzKFU6ogESSKRZZbdqraPdcKVxEC17Cm1Xvbyy76PARQMmgrgceH4krAH6xmjKwJ3HtSAKuyFm1BBWYqtchtq9tBap8Qr4M-a6e59f7bb27d9baac314fcf3de92514bedce7564206e0741dac4dd652248b6df<b style="background:burlywood">.</b>100000</span></p></div>
 </div>
 
 <h4>Mining Ports</h4>
@@ -87,7 +92,7 @@
 		<tr>
 			<td colspan="5">
 				<span>Example:</span>
-				<code>minerd -a cryptonight -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
+				<code>minerd -a cryptonight -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS-YOUR_PAYMENT_ID.YOUR_FIXED_HASHRATE</span> -p x</code>
 			</td>
 		</tr>
 		<tr>
@@ -100,7 +105,7 @@
 		<tr>
 			<td colspan="5">
 				<span>Example:</span>
-				<code>yam -c x -M stratum+tcp://<span class="exampleAddress">YOUR_WALLET_ADDRESS</span>:x@<span class="exampleHost"></span>:<span class="examplePort"></span>/xmr</code>
+				<code>yam -c x -M stratum+tcp://<span class="exampleAddress">YOUR_WALLET_ADDRESS-YOUR_PAYMENT_ID.YOUR_FIXED_HASHRATE</span>:x@<span class="exampleHost"></span>:<span class="examplePort"></span>/xmr</code>
 			</td>
 		</tr>
 		<tr>
@@ -113,7 +118,7 @@
 		<tr>
 			<td colspan="5">
 				<span>Example:</span>
-				<code>NsCpuCNMiner64 -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
+				<code>NsCpuCNMiner64 -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS-YOUR_PAYMENT_ID.YOUR_FIXED_HASHRATE</span> -p x</code>
 			</td>
 		</tr>
 		<tr>
@@ -126,7 +131,7 @@
 		<tr>
 			<td colspan="5">
 				<span>Example:</span>
-				<code>NsGpuCNMiner -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
+				<code>NsGpuCNMiner -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS-YOUR_PAYMENT_ID.YOUR_FIXED_HASHRATE</span> -p x</code>
 			</td>
 		</tr>
 		<tr>
@@ -139,7 +144,7 @@
 		<tr>
 			<td colspan="5">
 				<span>Example:</span>
-				<code>ccminer -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS</span> -p x</code>
+				<code>ccminer -o stratum+tcp://<span class="exampleHost"></span>:<span class="examplePort"></span> -u <span class="exampleAddress">YOUR_WALLET_ADDRESS-YOUR_PAYMENT_ID.YOUR_FIXED_HASHRATE</span> -p x</code>
 			</td>
 		</tr>
 		</tbody>
