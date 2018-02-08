@@ -1,0 +1,23 @@
+<div class="container">
+<div class="col-sm-6 col-sm-offset-3">
+    <% if (message) { %>
+        <div class="alert alert-danger"><%- message %></div>
+    <% } %>
+    <!-- LOGIN FORM -->
+    <form action="password" method="post">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="text" class="form-control" name="email" id="emailNew">
+        </div>
+        <button class="btn btn-primary" onclick="validateCredentials(event)"
+            id="submit_resetpass">Reset my password</button>
+        <hr>
+        <p><% include ../static/pages/recaptcha.html %></p>
+    </form>
+</div>
+</div>
+<script type="text/javascript">
+
+var btn = $('#submit_resetpass');
+
+</script>

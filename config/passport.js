@@ -7,8 +7,14 @@ var GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy;
 // load up the user model
 var User       = require('../app/models/user');
 
+// use randomstring for tokens
+var randomstring = require("randomstring");
+
 // load the auth variables
 var configAuth = require('./auth'); // use this one for testing
+
+// use mailer for user registration emails
+var mailer = require('../app/mailer');
 
 module.exports = function(passport) {
 
@@ -57,6 +63,11 @@ module.exports = function(passport) {
                 if (!user.validPassword(password))
                     return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
 
+                if(!user.local.verified)
+                    return done(null, false, req.flash('loginMessage', 
+                        'Your email address is not verified.<br/>If you did not receive our verification email, we can <a href="' + 
+                         config.site.toString() + '/verify/' + encodeURIComponent(user.local.email) + '">send it again</a>.'));
+
                 // all is well, return user
                 else
                     return done(null, user);
@@ -95,20 +106,28 @@ module.exports = function(passport) {
 
                     // check to see if theres already a user with that email
                     if (user) {
-                        return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+                        return done(null, false, req.flash('signupMessage', 'The email is already taken.'));
                     } else {
 
                         // create the user
                         var newUser            = new User();
 
-                        newUser.local.email    = email;
-                        newUser.local.password = newUser.generateHash(password);
+                        newUser.local.email         = email;
+                        newUser.local.password      = newUser.generateHash(password);
+                        newUser.local.verify_token  = randomstring.generate(12);
+                        newUser.local.verified      = false;
 
                         newUser.save(function(err) {
                             if (err)
                                 return done(err);
-
-                            return done(null, newUser);
+                            
+                            passport.verifyEmail(newUser, function(error){
+                                if(error) {
+                                    log('error', logSystem, 'Failed to send email for new user %s: %s', [email, error.toString()]);
+                                    // complete user registration anyway
+                                }
+                                return done(null, false, req.flash('signupMessage', 'verify'));
+                            });
                         });
                     }
 
@@ -128,11 +147,20 @@ module.exports = function(passport) {
                         var user = req.user;
                         user.local.email = email;
                         user.local.password = user.generateHash(password);
+                        user.local.verify_token  = randomstring.generate(12);
+                        user.local.verified      = false;
+
                         user.save(function (err) {
                             if (err)
                                 return done(err);
-                            
-                            return done(null,user);
+
+                                passport.verifyEmail(user, function(error){
+                                    if(error) {
+                                        log('error', logSystem, 'Failed to send email for newly connected user %s: %s', [email, error.toString()]);
+                                        // complete user registration anyway
+                                    }
+                                    return done(null, user);
+                                });
                         });
                     }
                 });
@@ -376,4 +404,13 @@ module.exports = function(passport) {
 
     }));
 
+    passport.verifyEmail = function(user, callback) {
+        var url = config.site + '/verify/' + encodeURIComponent(user.local.email) + '/' + user.local.verify_token;
+        mailer.send(user.local.email, 'RustyBlock pool registration: confirm your email',
+            null, 'Hello,<br/><br/>this email address was used for registration on RustyBlock cryptocurrency mining pool. ' + 
+            'We\'ve sent this message to check ownership of the specified email address.<br/><br/>' + 
+            'Please follow this link to complete the registration process: <a href="' + url + '" target="_blank">' + url + '</a><br/>' +
+            '<br/>--<br/><b>RustyBlock Team</b><br/><a href="mailto:' + process.env.emailAddressFrom + '">' + process.env.emailAddressFrom + '</a>',
+            callback);
+    };
 };

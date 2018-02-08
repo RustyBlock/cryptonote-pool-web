@@ -1,6 +1,7 @@
 {
     "coin": "electroneum",
     "symbol": "ETN",
+    "site": "https://www.etn.rustylock.club",
     "logging": {
         "files": {
             "level": "info",

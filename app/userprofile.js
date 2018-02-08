@@ -2,6 +2,9 @@ module.exports = function()
 {
     var User = require('../app/models/user');
     var wallets = require('./wallets')();
+    var mailer = require('../app/mailer');
+    var htmlencode = require('htmlencode');
+    var randomstring = require("randomstring");
 
     return {
         changePassword: function(req, res, done) {
@@ -169,6 +172,36 @@ module.exports = function()
 
                 return success(user);
             });
+        },
+
+        resetPassword: function(redirectUrl, req, res, done) {
+            User.findOne({ 'local.email' :  req.body.email }, function(err, user) {
+                var newPass = 'R' + randomstring.generate(6) + Math.floor(Math.random() * 10);
+                // if there are any errors, return the error
+                if (err){
+                    log('warn', logSystem, 'Failed to find user %s for password reset: %s', [req.user.local.email, err.toString()]);
+                    return done(err);
+                }
+
+                // if no user is found, return the message
+                if (!user) {
+                    log('warn', logSystem, 'User not found for password reset: %s', [req.body.email]);
+                    return done(null, false);
+                }
+
+                user.local.password = user.generateHash(newPass);
+                user.save(function(err) {
+                    if (err) {
+                        log('error', logSystem, 'Failed to reset password for user %s : %s', [user.local.email, err.toString()]);
+                        return done(err);
+                    }
+                    log('info', logSystem, 'Password reset for user %s', [user.local.email]);
+
+                    passowrdEmail(req.body.email, newPass, function() {
+                        res.redirect(redirectUrl);
+                    });
+                });
+            });            
         }
     };
 
@@ -183,4 +216,14 @@ module.exports = function()
     
         return false;
     };    
+
+    function passowrdEmail (email, password, callback) {
+        var url = config.site + '#login';
+        mailer.send(email, 'RustyBlock pool: password reset',
+            null, 'Hello,<br/><br/>this email address was used for registration on RustyBlock cryptocurrency mining pool. ' + 
+            'We\'ve sent this message in response to the password reset request made on RustyBlock web site.<br/><br/>' + 
+            'You can <a href="' + url + '" target="_blank">login</a> with your email and this password: <b>' + htmlencode.htmlEncode(password) + '</b><br/>' +
+            '<br/>--<br/><b>RustyBlock Team</b><br/><a href="mailto:' + process.env.emailAddressFrom + '">' + process.env.emailAddressFrom + '</a>',
+            callback);
+    };
 };

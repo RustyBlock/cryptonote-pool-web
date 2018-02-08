@@ -9,6 +9,14 @@ module.exports = function(app, passport) {
 
     // show the home page (will also have our login links)
     app.get('/', function(req, res) {
+        var flashKey = 'signupMessage', flash = req.flash(flashKey);
+        if(flash.length > 0) {
+            if(flash[0] === 'verify') {
+                res.redirect("/#reverified");
+                return;
+            }
+            req.flash(flashKey, flash[0]);
+        }
         res.render('index.ejs', { req : req, res : res });
     });
 
@@ -62,6 +70,21 @@ module.exports = function(app, passport) {
                 res.redirect('/#login');
             }));
 
+        // show password reset form
+        app.get('/password', function(req, res) {
+            res.render('resetpass.ejs', { 
+                message: req.flash('passwordMessage').toString()
+            });
+        });
+
+        // process the login form
+        app.post('/password', recaptcha(function(req, res, next){
+            userProfile.resetPassword('/#resetpassmess', req, res, next);
+        }, function(req, res, next, errText) {
+            req.flash('passwordMessage', errText);
+            res.redirect('/#password');
+        }));
+    
         // SIGNUP =================================
         // show the signup form
         app.get('/signup', function(req, res) {
@@ -75,13 +98,57 @@ module.exports = function(app, passport) {
 
         // process the signup form
         app.post('/signup', recaptcha(passport.authenticate('local-signup', {
-            successRedirect : '/#profile', // redirect to the secure profile section
+            successRedirect : '/#reverified', // redirect to the secure profile section
             failureRedirect : '/#signup', // redirect back to the signup page if there is an error
             failureFlash : true // allow flash messages
         }), function(req, res, next, errText) {
             req.flash('signupMessage', errText);
             res.redirect('/#signup');
         }));
+
+        // verify email
+        app.get('/verify/:userName/:token?', function(req, res, next) {
+            var userName = req.params.userName.toLowerCase();
+            User.findOne({ 'local.email' :  userName }, function(err, user) {
+                // if there are any errors, return the error
+                if (err)
+                {
+                    log('error', logSystem, 'Failed to load user details by email: %s', [err]);
+                    res.redirect('/#notverified');
+                    return; 
+                }
+
+                // check if this is token verification step where both user and token specificed
+                if (user && req.params.token === user.local.verify_token) {
+                    user.local.verified = true;
+                    user.save(function(err) {
+                        if (err) {
+                            log('error', logSystem, 'Failed to mark user as email verified: %s', [err]);
+                            return;
+                        }
+                        res.redirect('/#verified');
+                    });
+                } else {
+                    if(user && req.params.token) {
+                        log('warn', logSystem, 'Email verification token mismatch for %s', [userName]);
+                    } else if(user === null) {
+                        log('info', logSystem, 'User %s not found for email verification', [userName]);
+                    } else {
+                        passport.verifyEmail(user, function(error){
+                            if(error) {
+                                log('error', logSystem, 'Failed to re-send email for user %s: %s', [user.local.email, error.toString()]);
+                                // complete user registration anyway
+                            }
+                            res.redirect('/#reverified');
+                        });
+                        return;
+                    }
+                    res.redirect('/#notverified');
+                    return;
+                }
+            });            
+
+        });
 
         // change password
         app.post('/changepass', userProfile.changePassword);
