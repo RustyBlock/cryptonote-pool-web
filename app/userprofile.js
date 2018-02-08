@@ -222,7 +222,7 @@ module.exports = function()
         mailer.send(email, 'RustyBlock pool: password reset',
             null, 'Hello,<br/><br/>this email address was used for registration on RustyBlock cryptocurrency mining pool. ' + 
             'We\'ve sent this message in response to the password reset request made on RustyBlock web site.<br/><br/>' + 
-            'You can <a href="' + url + '" target="_blank">login</a> with your email and this password: <b>' + htmlencode.htmlEncode(password) + '</b><br/>' +
+            'You can <a href="' + url + '" target="_blank">login</a> with your email address as a user name and this password: <b>' + htmlencode.htmlEncode(password) + '</b><br/>' +
             '<br/>--<br/><b>RustyBlock Team</b><br/><a href="mailto:' + process.env.emailAddressFrom + '">' + process.env.emailAddressFrom + '</a>',
             callback);
     };

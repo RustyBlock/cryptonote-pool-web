@@ -3,6 +3,8 @@ branch-defaults:
     environment: node-express-env
   master:
     environment: node-express-env
+  registration-emails:
+    environment: node-express-env
 environment-defaults:
   Default-Environment:
     branch: null
