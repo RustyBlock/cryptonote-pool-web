@@ -218,7 +218,7 @@ $("#saveWallets").click(function(){
         }
 
         if(addr.indexOf(".") !== -1) {
-            mess.html("line " + (i + 1) + ": Dot should not be included in wallet address registration.</br>Please use dash (-) symbol to specify Payment ID after ETN wallet address.");
+            mess.html("line " + (i + 1) + ": Dot should not be included in wallet address registration.</br>Please use hyphen (-) symbol to specify Payment ID after ETN wallet address.");
             addressValid = false;
             break;
         }
